@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MoneyMantra 9 – Financial Health Scorecard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #020617;
+      --card: #0b1220;
+      --border: #1f2937;
+      --accent: #22c55e;
+      --accent-soft: rgba(34,197,94,0.12);
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --danger: #ef4444;
+      --warn: #f97316;
+      --info: #38bdf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #020617 100%);
+      color: var(--text-main);
+    }
+    .app-container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 16px 14px 40px;
+    }
+    h1 {
+      font-size: 1.4rem;
+      text-align: center;
+      margin: 8px 0 2px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      margin-bottom: 16px;
+    }
+    .badge-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: var(--text-soft);
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(34,197,94,0.8);
+    }
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.55);
+    }
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title span.sub {
+      font-weight: 400;
+      font-size: 0.7rem;
+      color: var(--text-soft);
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 2px;
+    }
+    .hi-label {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 9px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      font-family: inherit;
+    }
+    textarea { min-height: 50px; resize: vertical; }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.45);
+    }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .row > .col-6 { flex: 1 1 48%; }
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .chip {
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 0.75rem;
+      border: 1px solid #374151;
+      color: var(--text-soft);
+      background: #020617;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .chip input {
+      width: auto;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+    .hint {
+      font-size: 0.7rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+    .btn {
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #4ade80);
+      color: #022c22;
+      width: 100%;
+    }
+    .btn-primary.secondary {
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #022c22;
+    }
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 12px rgba(34,197,94,0.6);
+    }
+    .small { font-size: 0.75rem; }
+    .score-box {
+      text-align: center;
+      padding: 12px 10px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 60%);
+      border: 1px solid #22c55e44;
+      margin-bottom: 10px;
+    }
+    .score-label {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+    .score-value {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .score-value span {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-soft);
+    }
+    .score-band {
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+    .score-band.excellent { color: var(--accent); }
+    .score-band.good { color: var(--info); }
+    .score-band.average { color: var(--warn); }
+    .score-band.weak { color: var(--danger); }
+    .list { margin: 4px 0 0; padding-left: 18px; }
+    .list li { margin-bottom: 3px; }
+    .footer-note {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-soft);
+      margin-top: 10px;
+    }
+    .section-heading {
+      font-weight: 600;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+    @media print {
+      body { background: #ffffff; color: #000000; }
+      .app-container { max-width: 100%; padding: 0 12px; }
+      .card {
+        box-shadow: none;
+        border-radius: 8px;
+        border-color: #d1d5db;
+        background: #ffffff;
+      }
+      .badge-brand, .footer-note {
+        color: #374151 !important;
+        border-color: #d1d5db;
+      }
+      .score-box {
+        background: #f9fafb;
+        border-color: #d1d5db;
+      }
+      button { display: none !important; }
+      .subtitle { margin-bottom: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div style="text-align:center;margin-top:4px;">
+      <span class="badge-brand">
+        <span class="badge-dot"></span>
+        MoneyMantra 9 • Financial Health Scorecard
+      </span>
+    </div>
+    <h1>Financial Health Scorecard</h1>
+    <div class="subtitle">
+      0–100 score for your money life • Designed for coaching & self-check / कोचिंग व स्वयं-जांच के लिए 0–100 स्कोर
+    </div>
+
+    <!-- SCORE CARD (TOP) -->
+    <div class="card">
+      <div class="card-title">
+        Overall Score / समग्र स्कोर
+        <span class="sub">0 – 100</span>
+      </div>
+      <div class="score-box">
+        <div class="score-label">Your Financial Health Score / आपका वित्तीय स्वास्थ्य स्कोर</div>
+        <div id="scoreValueTop" class="score-value">0<span>/100</span></div>
+        <div id="scoreBandTop" class="score-band weak">Start your journey today / आज से शुरुआत करें</div>
+      </div>
+      <div class="hint">
+        This score is based on income, expenses, savings, dependents, emergency fund, insurance, loans & investments. /
+        यह स्कोर आपकी आय, खर्च, आश्रितों, बचत, इमरजेंसी फंड, बीमा, लोन व निवेश पर आधारित है।
+      </div>
+    </div>
+
+    <!-- BASIC DETAILS -->
+    <div class="card">
+      <div class="card-title">
+        Basic Details / मूल जानकारी
+      </div>
+      <label for="ageInput">Age (years) / आयु (वर्ष)</label>
+      <input id="ageInput" type="number" min="18" max="80" placeholder="e.g. 30" />
+
+      <div class="row">
+        <div class="col-6">
+          <label for="incomeInput">Approx Monthly Income (₹) / अनुमानित मासिक आय (₹)</label>
+          <input id="incomeInput" type="number" min="0" placeholder="e.g. 50000" />
+        </div>
+        <div class="col-6">
+          <label for="qualificationSelect">Highest Qualification / उच्चतम शैक्षणिक पात्रता</label>
+          <select id="qualificationSelect">
+            <option value="none">Select / चुनें</option>
+            <option value="ssc">SSC (10th)</option>
+            <option value="hsc">HSC (12th)</option>
+            <option value="graduate">Graduate</option>
+            <option value="engineer">Engineer</option>
+            <option value="doctor">Doctor</option>
+            <option value="professional">CA / Lawyer / Other Professional</option>
+            <option value="other">Other / अन्य</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="expenseInput">Approx Total Monthly Expenses (₹) / अनुमानित कुल मासिक खर्च (₹)</label>
+      <input id="expenseInput" type="number" min="0" placeholder="Rent + EMIs + bills + food + other" />
+      <div class="hint">
+        Include all regular monthly expenses (home, EMIs, bills, basic lifestyle). /
+        घर, EMI, बिल व सामान्य जीवन के सभी मासिक खर्च शामिल करें।
+      </div>
+
+      <div class="row">
+        <div class="col-6">
+          <label>Primary Source of Income / आय का मुख्य स्रोत</label>
+          <div class="chip-group">
+            <label class="chip">
+              <input type="radio" name="incomeType" value="salary" checked />
+              <span>Salary / वेतन</span>
+            </label>
+            <label class="chip">
+              <input type="radio" name="incomeType" value="business" />
+              <span>Business / व्यवसाय</span>
+            </label>
+            <label class="chip">
+              <input type="radio" name="incomeType" value="both" />
+              <span>Both / दोनों</span>
+            </label>
+          </div>
+        </div>
+        <div class="col-6">
+          <label for="savingsInput">Optional: Monthly Savings (₹) / वैकल्पिक: मासिक बचत (₹)</label>
+          <input id="savingsInput" type="number" min="0" placeholder="If blank, app will calculate" />
+          <div class="hint">
+            If you leave this empty, savings = income − expenses. / यदि खाली छोड़ें तो बचत = आय − खर्च मानी जाएगी।
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6">
+          <label for="dependentsInput">Number of dependents (excluding you) / आश्रितों की संख्या (आपके अलावा)</label>
+          <input id="dependentsInput" type="number" min="0" placeholder="e.g. 3" />
+        </div>
+        <div class="col-6">
+          <label>Spouse & Children / जीवनसाथी व बच्चे</label>
+          <div class="chip-group">
+            <label class="chip">
+              <input type="radio" name="hasSpouse" value="yes" checked />
+              <span>Spouse / जीवनसाथी है</span>
+            </label>
+            <label class="chip">
+              <input type="radio" name="hasSpouse" value="no" />
+              <span>No spouse / अविवाहित या अलग</span>
+            </label>
+          </div>
+          <div class="chip-group">
+            <label class="chip">
+              <input type="radio" name="childrenCount" value="none" checked />
+              <span>No child / कोई बच्चा नहीं</span>
+            </label>
+            <label class="chip">
+              <input type="radio" name="childrenCount" value="one" />
+              <span>1 child / 1 बच्चा</span>
+            </label>
+            <label class="chip">
+              <input type="radio" name="childrenCount" value="twoPlus" />
+              <span>2 or more / 2 या अधिक</span>
+            </label>
+          </div>
+          <div class="chip-group">
+            <label class="chip">
+              <input type="radio" name="hasDaughter" value="yes" />
+              <span>Daughter present / बेटी है</span>
+            </label>
+            <label class="chip">
+              <input type="radio" name="hasDaughter" value="no" checked />
+              <span>No daughter / बेटी नहीं</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GOALS -->
+    <div class="card">
+      <div class="card-title">
+        Goals / लक्ष्य
+      </div>
+      <label>Do you have written financial goals? / क्या आपने लिखित में वित्तीय लक्ष्य बनाए हैं?</label>
+      <div class="chip-group">
+        <label class="chip">
+          <input type="radio" name="goalsWritten" value="none" checked />
+          <span>No goals / कोई लक्ष्य नहीं</span>
+        </label>
+        <label class="chip">
+          <input type="radio" name="goalsWritten" value="idea" />
+          <span>Only rough idea / सिर्फ अंदाज़ा</span>
+        </label>
+        <label class="chip">
+          <input type="radio" name="goalsWritten" value="written" />
+          <span>Written with time-line / लिखित, समय के साथ</span>
+        </label>
+      </div>
+      <label for="goalsText">Main goals (optional) / मुख्य लक्ष्य (वैकल्पिक)</label>
+      <textarea id="goalsText" placeholder="Example: become loan free, children's education (daughter/son), retirement fund, dream home... / उदाहरण: लोन फ्री होना, बेटी/बेटे की पढ़ाई, रिटायरमेंट फंड, घर..."></textarea>
+    </div>
+
+    <!-- SAFETY: EMERGENCY + INSURANCE -->
+    <div class="card">
+      <div class="card-title">
+        Safety: Emergency & Insurance / सुरक्षा: इमरजेंसी फंड व बीमा
+      </div>
+      <label for="emergencyMonths">
+        Emergency fund covers how many months of expenses? / आपका इमरजेंसी फंड कितने महीनों के खर्च को संभाल सकता है?
+      </label>
+      <select id="emergencyMonths">
+        <option value="0">&lt; 1 month / 1 माह से कम</option>
+        <option value="1">1 – 3 months / 1 – 3 माह</option>
+        <option value="2">3 – 6 months / 3 – 6 माह</option>
+        <option value="3">&gt; 6 months / 6 माह से अधिक</option>
+      </select>
+
+      <label>Health Insurance (Mediclaim) / स्वास्थ्य बीमा (मेडिक्लेम)</label>
+      <div class="chip-group">
+        <label class="chip">
+          <input type="radio" name="mediclaim" value="none" checked />
+          <span>No cover / कोई कवर नहीं</span>
+        </label>
+        <label class="chip">
+          <input type="radio" name="mediclaim" value="self" />
+          <span>Self only / केवल स्वयं</span>
+        </label>
+        <label class="chip">
+          <input type="radio" name="mediclaim" value="family" />
+          <span>Self + family / स्वयं + परिवार</span>
+        </label>
+      </div>
+
+      <label>Term Insurance (Life cover) / टर्म इंश्योरेंस (जीवन कवर)</label>
+      <div class="chip-group">
+        <label class="chip">
+          <input type="radio" name="termCover" value="none" checked />
+          <span>No term insurance / कोई टर्म प्लान नहीं</span>
+        </label>
+        <label class="chip">
+          <input type="radio" name="termCover" value="low" />
+          <span>Some cover / थोड़ा कवर</span>
+        </label>
+        <label class="chip">
+          <input type="radio" name="termCover" value="adequate" />
+          <span>Adequate cover / पर्याप्त कवर</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- LOANS & LIABILITIES -->
+    <div class="card">
+      <div class="card-title">
+        Loans & Liabilities / ऋण व देनदारियां
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <label for="emiTotal">Total EMIs per month (₹) / कुल मासिक EMI (₹)</label>
+          <input id="emiTotal" type="number" min="0" placeholder="e.g. 15000" />
+        </div>
+        <div class="col-6">
+          <label>High-interest loans? / क्या हाई इंटरेस्ट वाला लोन है?</label>
+          <div class="chip-group">
+            <label class="chip">
+              <input type="radio" name="highLoan" value="no" checked />
+              <span>No / नहीं</span>
+            </label>
+            <label class="chip">
+              <input type="radio" name="highLoan" value="yes" />
+              <span>Yes (credit card/personal) / हाँ</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <label for="otherLiab">Other major liabilities (optional) / अन्य बड़ी देनदारियां (वैकल्पिक)</label>
+      <textarea id="otherLiab" placeholder="Example: Hand loans, pending taxes... / उदाहरण: उधारी, बकाया टैक्स..."></textarea>
+    </div>
+
+    <!-- INVESTMENTS -->
+    <div class="card">
+      <div class="card-title">
+        Investments / निवेश
+        <span class="sub">Select what you already have / जो निवेश हैं उन्हें चुनें</span>
+      </div>
+      <div class="chip-group">
+        <label class="chip">
+          <input type="checkbox" name="investType" value="equityMF" />
+          <span>Equity MF / इक्विटी म्यूचुअल फंड</span>
+        </label>
+        <label class="chip">
+          <input type="checkbox" name="investType" value="stocks" />
+          <span>Stocks / शेयर</span>
+        </label>
+        <label class="chip">
+          <input type="checkbox" name="investType" value="debt" />
+          <span>FD / RD / Debt funds</span>
+        </label>
+        <label class="chip">
+          <input type="checkbox" name="investType" value="gold" />
+          <span>Gold / सोना</span>
+        </label>
+        <label class="chip">
+          <input type="checkbox" name="investType" value="realestate" />
+          <span>Real Estate / प्रॉपर्टी</span>
+        </label>
+        <label class="chip">
+          <input type="checkbox" name="investType" value="other" />
+          <span>Other / अन्य</span>
+        </label>
+      </div>
+      <div class="hint">
+        Diversified investments improve your long-term score. / विविध निवेश आपकी लंबी अवधि की स्थिति को मजबूत करते हैं।
+      </div>
+    </div>
+
+    <!-- CALCULATE + SUMMARY + DOWNLOAD -->
+    <div class="card">
+      <button id="calcBtn" class="btn btn-primary">
+        Calculate Financial Health Score / वित्तीय स्वास्थ्य स्कोर निकालें
+      </button>
+
+      <div id="bottomScore" class="small" style="margin-top:8px;">
+        Financial Health Score: <b><span id="scoreValueBottomText">0/100</span></b>
+        &nbsp;|&nbsp;
+        Band: <span id="scoreBandBottomText">Start your journey today / आज से शुरुआत करें</span>
+      </div>
+
+      <button id="downloadBtn" class="btn btn-primary secondary" style="margin-top:8px;">
+        Download / Print PDF Summary / PDF सारांश डाउनलोड या प्रिंट करें
+      </button>
+
+      <div id="tipsBox" class="small" style="margin-top:8px;color:var(--text-soft);">
+        Fill or adjust the details above and tap the button to update your score. / ऊपर की जानकारी भरें और बटन दबाएँ – आपका स्कोर अपडेट होगा।
+      </div>
+
+      <div id="secondIncomeBox" class="small" style="margin-top:8px;color:var(--text-soft);">
+        <!-- Qualification-based second income ideas will appear here -->
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Prepared by <b>Pranav G</b> – MoneyMantra 9 | Financial Fitness Coach
+    </div>
+  </div>
+
+  <script>
+    function getRadioValue(name) {
+      const el = document.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : null;
+    }
+
+    function getQualificationIdeas(qual) {
+      // Returns array of {en, hi}
+      switch (qual) {
+        case "ssc":
+          return [
+            {
+              en: "Start a part-time delivery, car cleaning or society helper service for stable extra cash flow.",
+              hi: "पार्ट-टाइम डिलिवरी, गाड्यांची साफसफाई किंवा सोसाइटी हेल्पर सेवा सुरू करून स्थिर अतिरिक्त कमाई बनाएं।"
+            },
+            {
+              en: "Offer home-based tiffin, tea or snacks from your kitchen on evening or weekend basis.",
+              hi: "शाम या वीकेंड में अपने किचन से घरगुती टिफिन, चहा या स्नॅक्सची छोटी सेवा सुरू करा."
+            },
+            {
+              en: "Do simple reselling on WhatsApp (clothes, bags, daily-use items) without keeping stock.",
+              hi: "कोई स्टॉक न ठेवता कपडे, पर्स, डेली-यूज वस्तूंचे WhatsApp द्वारे रीसैलिंग शुरू करें।"
+            }
+          ];
+        case "hsc":
+          return [
+            {
+              en: "Take basic tuition for school students or help kids with homework in your area.",
+              hi: "अपने क्षेत्र के स्कूल विद्यार्थियों को बेसिक ट्यूशन या होमवर्क में मदद करना शुरू करें।"
+            },
+            {
+              en: "Learn basic computer/Excel and offer data entry or form-filling services.",
+              hi: "बेसिक कंप्यूटर/Excel सीखकर डेटा एंट्री या फॉर्म-फिलिंग की सेवा दें।"
+            },
+            {
+              en: "Start a small weekend snacks or juice counter near offices, colleges or societies.",
+              hi: "ऑफिस, कॉलेज या सोसायटी के पास वीकेंड पर छोटा स्नैक्स या जूस काउंटर शुरू करें।"
+            }
+          ];
+        case "graduate":
+          return [
+            {
+              en: "Offer subject-wise tuition, English or communication coaching to students.",
+              hi: "विद्यार्थियों के लिए विषयवार ट्यूशन, इंग्लिश या कम्युनिकेशन कोचिंग शुरू करें।"
+            },
+            {
+              en: "Provide freelancing services like resume writing, MS Office support or online form support.",
+              hi: "रेज़्यूमे लेखन, MS ऑफिस सपोर्ट या ऑनलाइन फॉर्म सपोर्ट जैसी फ्रीलांस सेवाएँ दें।"
+            },
+            {
+              en: "Use weekends to build a side business like digital services, social media management or content support.",
+              hi: "वीकेंड पर डिजिटल सर्विस, सोशल मीडिया मैनेजमेंट या कंटेंट सपोर्ट जैसा साइड बिज़नेस बनाएं।"
+            }
+          ];
+        case "engineer":
+          return [
+            {
+              en: "Start technical freelancing like basic coding, website support or tech troubleshooting.",
+              hi: "बेसिक कोडिंग, वेबसाइट सपोर्ट या टेक्निकल ट्रबलशूटिंग जैसी फ्रीलांस सेवाएँ शुरू करें।"
+            },
+            {
+              en: "Teach maths, science or engineering-related subjects to students online or offline.",
+              hi: "ऑनलाइन या ऑफलाइन विद्यार्थियों को गणित, साइंस या इंजीनियरिंग से जुड़े विषय पढ़ाएँ।"
+            },
+            {
+              en: "Build a small digital product or course (Excel, coding basics, tech tools) and sell it online.",
+              hi: "Excel, बेसिक कोडिंग या टेक टूल्स पर छोटा डिजिटल कोर्स/प्रोडक्ट बनाकर ऑनलाइन बेचें।"
+            }
+          ];
+        case "doctor":
+          return [
+            {
+              en: "Offer tele-consultations or second-opinion consultations in your specialization.",
+              hi: "अपने स्पेशलाइजेशन में टेली-कंसल्टेशन या सेकंड ओपिनियन कंसल्टेशन देना शुरू करें।"
+            },
+            {
+              en: "Conduct preventive health awareness sessions for societies or corporates.",
+              hi: "सोसायटी या कॉर्पोरेट के लिए प्रिवेंटिव हेल्थ अवेयरनेस सेशन आयोजित करें।"
+            },
+            {
+              en: "Create simple health guides or digital checklists and offer them as paid resources.",
+              hi: "सरल हेल्थ गाइड या डिजिटल चेकलिस्ट तैयार करके उन्हें पेड रिसोर्स के रूप में ऑफर करें।"
+            }
+          ];
+        case "professional":
+          return [
+            {
+              en: "Provide consulting in your domain (tax, legal, compliance, financial planning etc.).",
+              hi: "अपने डोमेन (टैक्स, लीगल, कंप्लायंस, फाइनेंशियल प्लानिंग आदि) में कंसल्टिंग सेवाएँ दें।"
+            },
+            {
+              en: "Create small paid workshops or webinars for common people based on your expertise.",
+              hi: "अपनी विशेषज्ञता पर आम लोगों के लिए छोटे पेड वर्कशॉप या वेबिनार आयोजित करें।"
+            },
+            {
+              en: "Offer document review services (agreements, tax papers, financial documents) as a side service.",
+              hi: "एग्रीमेंट, टैक्स पेपर या फाइनेंशियल डॉक्युमेंट्स की रिव्यू सेवा साइड सर्विस के रूप में दें।"
+            }
+          ];
+        case "other":
+          return [
+            {
+              en: "Use your existing interest (craft, art, cooking, music) to offer small paid workshops.",
+              hi: "क्राफ्ट, आर्ट, कुकिंग, म्यूज़िक जैसी अपनी रुचियों पर छोटे पेड वर्कशॉप्स लें।"
+            },
+            {
+              en: "Start reselling, small tiffin, or basic cleaning/organising services in your local area.",
+              hi: "अपने क्षेत्र में रीसैलिंग, छोटा टिफिन या बेसिक क्लीनिंग/ऑर्गनाइज़िंग सेवाएँ शुरू करें।"
+            },
+            {
+              en: "Support local businesses with tasks like billing, stock entry or WhatsApp promotion.",
+              hi: "लोकल बिज़नेस को बिलिंग, स्टॉक एंट्री या WhatsApp प्रमोशन जैसे कामों में सपोर्ट दें।"
+            }
+          ];
+        default:
+          return [];
+      }
+    }
+
+    function calculateScore() {
+      const income = parseFloat(document.getElementById("incomeInput").value || "0");
+      const expense = parseFloat(document.getElementById("expenseInput").value || "0");
+      let savingsManual = parseFloat(document.getElementById("savingsInput").value || "0");
+      const emi = parseFloat(document.getElementById("emiTotal").value || "0");
+      const qualification = document.getElementById("qualificationSelect").value;
+
+      const emergencyLevel = parseInt(document.getElementById("emergencyMonths").value || "0", 10);
+      const mediclaim = getRadioValue("mediclaim");
+      const termCover = getRadioValue("termCover");
+      const goalsWritten = getRadioValue("goalsWritten");
+      const highLoan = getRadioValue("highLoan");
+
+      const dependents = parseInt(document.getElementById("dependentsInput").value || "0", 10);
+      const hasSpouse = getRadioValue("hasSpouse") === "yes";
+      const childrenCount = getRadioValue("childrenCount");
+      const hasDaughter = getRadioValue("hasDaughter") === "yes";
+
+      const goalsText = (document.getElementById("goalsText").value || "").toLowerCase();
+      const investChecks = document.querySelectorAll('input[name="investType"]:checked');
+      const investCount = investChecks.length;
+
+      // Derive savings if not manually entered
+      if (!document.getElementById("savingsInput").value && income > 0 && expense >= 0) {
+        savingsManual = Math.max(0, income - expense);
+      }
+
+      let score = 0;
+
+      // 1) Savings Rate (0–25)
+      let savingsScore = 0;
+      let savingsRate = 0;
+      if (income > 0 && savingsManual >= 0) {
+        savingsRate = (savingsManual / income) * 100;
+        if (savingsRate < 5) savingsScore = 0;
+        else if (savingsRate < 10) savingsScore = 5;
+        else if (savingsRate < 20) savingsScore = 15;
+        else if (savingsRate < 30) savingsScore = 20;
+        else savingsScore = 25;
+      }
+      score += savingsScore;
+
+      // 2) Emergency Fund (0–20)
+      let emergencyScore = 0;
+      if (emergencyLevel === 0) emergencyScore = 0;
+      else if (emergencyLevel === 1) emergencyScore = 10;
+      else if (emergencyLevel === 2) emergencyScore = 15;
+      else if (emergencyLevel === 3) emergencyScore = 20;
+      score += emergencyScore;
+
+      // 3) Insurance (0–15 base)
+      let insuranceScore = 0;
+      const hasMediclaim = mediclaim === "self" || mediclaim === "family";
+      const hasTerm = termCover === "low" || termCover === "adequate";
+      if (hasMediclaim && hasTerm) insuranceScore = 15;
+      else if (hasMediclaim || hasTerm) insuranceScore = 8;
+      else insuranceScore = 0;
+
+      const hasDependents = dependents > 0 || hasSpouse || (childrenCount !== "none");
+      if (hasDependents && !hasTerm) {
+        insuranceScore = Math.max(0, insuranceScore - 5);
+      } else if (hasDependents && hasTerm && termCover === "adequate") {
+        insuranceScore = Math.min(15, insuranceScore + 2);
+      }
+      score += insuranceScore;
+
+      // 4) Debt Burden (0–20)
+      let debtScore = 0;
+      let emiPercent = 0;
+      if (income > 0 && emi >= 0) {
+        emiPercent = (emi / income) * 100;
+        if (emiPercent > 60) debtScore = 0;
+        else if (emiPercent > 40) debtScore = 5;
+        else if (emiPercent > 20) debtScore = 12;
+        else debtScore = 20;
+      }
+      if (highLoan === "yes") {
+        debtScore = Math.max(0, debtScore - 5);
+      }
+      score += debtScore;
+
+      // 5) Goal Clarity (0–10)
+      let goalScore = 0;
+      if (goalsWritten === "none") goalScore = 0;
+      else if (goalsWritten === "idea") goalScore = 5;
+      else if (goalsWritten === "written") goalScore = 10;
+      score += goalScore;
+
+      // 6) Investment Diversification (0–10)
+      let investScore = 0;
+      if (investCount === 0) investScore = 0;
+      else if (investCount === 1) investScore = 4;
+      else if (investCount === 2) investScore = 7;
+      else if (investCount >= 3) investScore = 10;
+      score += investScore;
+
+      if (score < 0) score = 0;
+      if (score > 100) score = 100;
+
+      // --- Render Score & Band (Top & Bottom) ---
+      const scoreValueTopEl = document.getElementById("scoreValueTop");
+      const scoreBandTopEl = document.getElementById("scoreBandTop");
+      const scoreValueBottomTextEl = document.getElementById("scoreValueBottomText");
+      const scoreBandBottomTextEl = document.getElementById("scoreBandBottomText");
+
+      const scoreRounded = Math.round(score);
+      scoreValueTopEl.innerHTML = scoreRounded + "<span>/100</span>";
+      scoreValueBottomTextEl.textContent = scoreRounded + "/100";
+
+      let bandTextEn = "";
+      let bandTextHi = "";
+      let bandClass = "";
+
+      if (score >= 80) {
+        bandTextEn = "Excellent – You are on a strong path.";
+        bandTextHi = "उत्कृष्ट – आप बहुत मजबूत रास्ते पर हैं।";
+        bandClass = "excellent";
+      } else if (score >= 60) {
+        bandTextEn = "Good – Improve a few areas and you can reach excellence.";
+        bandTextHi = "अच्छा – थोड़ी और सुधार से आप उत्कृष्ट स्तर पर पहुँच सकते हैं।";
+        bandClass = "good";
+      } else if (score >= 40) {
+        bandTextEn = "Average – Take focused action in the next 3–6 months.";
+        bandTextHi = "सामान्य – अगले 3–6 महीनों में खास ध्यान देने की ज़रूरत है।";
+        bandClass = "average";
+      } else {
+        bandTextEn = "Weak – Start with basics: emergency fund, insurance and debt control.";
+        bandTextHi = "कमज़ोर – इमरजेंसी फंड, बीमा और लोन कंट्रोल से शुरुआत करें।";
+        bandClass = "weak";
+      }
+
+      scoreBandTopEl.className = "score-band " + bandClass;
+      scoreBandTopEl.textContent = bandTextEn + " / " + bandTextHi;
+      scoreBandBottomTextEl.textContent = bandTextEn + " / " + bandTextHi;
+
+      // --- Dynamic Next Steps (bilingual, with insurance + investment mix) ---
+      const tips = [];
+
+      // Cashflow & savings
+      if (income > 0 && savingsRate < 20) {
+        tips.push({
+          type: "cashflow",
+          en: "Increase your savings rate step-by-step towards 20–30% of income.",
+          hi: "अपनी बचत धीरे-धीरे बढ़ाकर आय के 20–30% तक ले जाने की कोशिश करें।"
+        });
+      }
+
+      // Emergency fund
+      if (emergencyLevel < 2) {
+        tips.push({
+          type: "cashflow",
+          en: "Build an emergency fund of at least 3–6 months of essential expenses.",
+          hi: "कम से कम 3–6 महीनों के जरूरी खर्च जितना इमरजेंसी फंड तैयार करें।"
+        });
+      }
+
+      // Insurance
+      if (!hasMediclaim) {
+        tips.push({
+          type: "insurance",
+          en: "Consider a basic health insurance (mediclaim) for yourself and your family.",
+          hi: "अपने और परिवार के लिए एक बुनियादी स्वास्थ्य बीमा (मेडिक्लेम) लेने पर विचार करें।"
+        });
+      }
+      if (!hasTerm && dependents > 0) {
+        tips.push({
+          type: "insurance",
+          en: "If you have dependents, a simple term insurance with adequate cover is very important.",
+          hi: "यदि आपके आश्रित हैं, तो पर्याप्त कवर वाली एक साधारण टर्म इंश्योरेंस पॉलिसी लेना बेहद ज़रूरी है।"
+        });
+      } else if (hasTerm && termCover === "low") {
+        tips.push({
+          type: "insurance",
+          en: "Review your term insurance cover to check if it is sufficient for your dependents.",
+          hi: "अपनी टर्म इंश्योरेंस राशि की समीक्षा करें कि क्या यह आपके आश्रितों के लिए पर्याप्त है।"
+        });
+      }
+
+      // Debt
+      if (emiPercent > 40 || highLoan === "yes") {
+        tips.push({
+          type: "debt",
+          en: "Reduce high-interest loans and avoid taking new EMIs for non-essential items.",
+          hi: "हाई इंटरेस्ट वाले लोन को जल्द कम करें और गैर-जरूरी चीजों के लिए नई EMI लेने से बचें।"
+        });
+      }
+
+      // Investment diversification
+      if (investCount <= 1 && investCount >= 1) {
+        tips.push({
+          type: "investment",
+          en: "Gradually diversify into 2–3 types of investments such as FD/RD, equity mutual funds and gold.",
+          hi: "धीरे-धीरे 2–3 तरह के निवेश (जैसे FD/RD, इक्विटी म्यूचुअल फंड और सोना) में विविधता लाएँ।"
+        });
+      }
+      if (investCount === 0) {
+        tips.push({
+          type: "investment",
+          en: "Start with a simple monthly SIP in a diversified mutual fund for long-term goals.",
+          hi: "लंबी अवधि के लक्ष्यों के लिए एक सरल, विविधीकृत म्यूचुअल फंड में मासिक SIP से शुरुआत करें।"
+        });
+      }
+
+      // Goal clarity
+      if (goalsWritten !== "written") {
+        tips.push({
+          type: "goals",
+          en: "Write down your top 3–5 money goals with a target year for each.",
+          hi: "अपने 3–5 सबसे महत्वपूर्ण वित्तीय लक्ष्य लिखें और हर लक्ष्य के लिए एक लक्ष्य वर्ष तय करें।"
+        });
+      }
+
+      // Goal-specific: Retirement
+      const hasRetirementGoal = /retire|retirement|pension|old age|vruddhavastha|senior/i.test(goalsText);
+      if (hasRetirementGoal) {
+        tips.push({
+          type: "investment",
+          en: "Create a dedicated retirement fund SIP and link it to a clear target age (for example 55 or 60 years).",
+          hi: "एक अलग रिटायरमेंट फंड SIP बनाएं और उसे एक स्पष्ट लक्ष्य आयु (जैसे 55 या 60 वर्ष) से जोड़ें।"
+        });
+        tips.push({
+          type: "investment",
+          en: "Keep retirement money in growth-oriented funds now and shift gradually to safer options 5–10 years before retirement.",
+          hi: "रिटायरमेंट फंड को अभी के लिए ग्रोथ-ओरिएंटेड फंड में रखें और रिटायरमेंट से 5–10 वर्ष पहले धीरे-धीरे सुरक्षित विकल्पों में शिफ्ट करें।"
+        });
+      }
+
+      // Goal-specific: Loan free / debt free
+      const hasLoanFreeGoal = /loan\s*free|debt\s*free|no loan|home loan|car loan|personal loan|credit card/i.test(goalsText);
+      if (hasLoanFreeGoal) {
+        tips.push({
+          type: "debt",
+          en: "Prepare a debt freedom plan listing all loans, interest rates and target closure dates.",
+          hi: "सभी लोन, उन पर लगने वाला ब्याज व हर लोन की अनुमानित क्लोजर डेट लिखकर एक ‘डेब्ट फ्री प्लान’ बनाएं।"
+        });
+        tips.push({
+          type: "debt",
+          en: "Focus extra money on closing high-interest loans first while paying minimum on the rest.",
+          hi: "अतिरिक्त पैसे को सबसे पहले हाई इंटरेस्ट वाले लोन पर लगाएँ और बाकी लोन पर कम से कम अनिवार्य किस्त भरें।"
+        });
+      }
+
+      // Goal-specific: Child education
+      const hasChildEduGoal = /child|children|kid|kids|education|study|college|school fee|शिक्षा|पढ़ाई/i.test(goalsText);
+      if (hasChildEduGoal) {
+        tips.push({
+          type: "investment",
+          en: "Estimate future education cost for your child and convert it into a fixed monthly SIP amount.",
+          hi: "अपने बच्चे की भविष्य की शिक्षा लागत का अंदाज़ा लगाएँ और उसे एक तय मासिक क्रियान्वयन SIP राशि में बदलें।"
+        });
+        tips.push({
+          type: "investment",
+          en: "Use child-education or diversified equity funds for growth and keep a small portion in safe debt products.",
+          hi: "बच्चों की पढ़ाई के लिए चाइल्ड एजुकेशन या विविधीकृत इक्विटी फंड का उपयोग करें और थोड़ी राशि सुरक्षित डेब्ट प्रोडक्ट्स में रखें।"
+        });
+      }
+
+      // Extra sensitivity tip if daughter present
+      if (hasDaughter) {
+        tips.push({
+          type: "insurance",
+          en: "Since you have a daughter, ensure both education and protection planning (term cover + education fund) is in place.",
+          hi: "क्योंकि आपकी बेटी है, उसकी पढ़ाई और आपके न रहने की स्थिति में सुरक्षा (टर्म कवर + एजुकेशन फंड) की योजना ज़रूर बनाएं।"
+        });
+      }
+
+      // Deduplicate tips
+      const uniqueMap = new Map();
+      tips.forEach(t => {
+        if (!uniqueMap.has(t.en)) uniqueMap.set(t.en, t);
+      });
+      let uniqueTips = Array.from(uniqueMap.values());
+
+      // Ensure at least one insurance and one investment tip
+      const hasInsuranceTip = uniqueTips.some(t => t.type === "insurance");
+      const hasInvestmentTip = uniqueTips.some(t => t.type === "investment");
+      if (!hasInsuranceTip) {
+        uniqueTips.push({
+          type: "insurance",
+          en: "Review your health and life insurance needs at least once a year with a qualified advisor.",
+          hi: "अपने स्वास्थ्य और जीवन बीमा की आवश्यकता की समीक्षा साल में कम से कम एक बार किसी योग्य सलाहकार के साथ करें।"
+        });
+      }
+      if (!hasInvestmentTip) {
+        uniqueTips.push({
+          type: "investment",
+          en: "Link every long-term goal to a separate SIP so that investment and purpose stay clear.",
+          hi: "हर लंबे लक्ष्य के लिए अलग SIP बनाएँ ताकि निवेश और उद्देश्य दोनों स्पष्ट रहें।"
+        });
+      }
+
+      uniqueTips = uniqueTips.slice(0, 8);
+
+      const tipsBox = document.getElementById("tipsBox");
+      if (!uniqueTips.length) {
+        tipsBox.innerHTML = "You are doing well. Keep reviewing your plan once a year. / आप अच्छा कर रहे हैं, साल में एक बार अपनी योजना ज़रूर रिव्यू करें।";
+      } else {
+        tipsBox.innerHTML =
+          "<span class='section-heading'>Next steps / अगले कदम:</span><ul class='list'>" +
+          uniqueTips.map(t => "<li>" + t.en + " / " + t.hi + "</li>").join("") +
+          "</ul>";
+      }
+
+      // --- Qualification-based Second Income Ideas (3 ideas) ---
+      const secondIncomeBox = document.getElementById("secondIncomeBox");
+      const qualIdeas = getQualificationIdeas(qualification);
+
+      if (!qualification || qualification === "none" || qualIdeas.length === 0) {
+        secondIncomeBox.innerHTML =
+          "Select your qualification above to see personalised second income ideas. / अपनी शैक्षणिक पात्रता चुनें ताकि आपके लिए उपयुक्त दूसरी आय के सुझाव दिख सकें।";
+      } else {
+        const limitedIdeas = qualIdeas.slice(0, 3);
+        secondIncomeBox.innerHTML =
+          "<span class='section-heading'>Suggested Second Income Ideas (based on your qualification) / आपकी शिक्षा के अनुसार दूसरी आय के सुझाव:</span><ul class='list'>" +
+          limitedIdeas
+            .map(i => "<li>" + i.en + " / " + i.hi + "</li>")
+            .join("") +
+          "</ul>";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("calcBtn").addEventListener("click", calculateScore);
+      document.getElementById("downloadBtn").addEventListener("click", function () {
+        window.print();
+      });
+      calculateScore();
+    });
+  </script>
+</body>
+</html>
